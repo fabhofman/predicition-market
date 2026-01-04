@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facto | Markets</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="logo-block">
+        <h1 class="logo-text">FACTO</h1>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">Markets</a>
+        <a href="portfolio.html" class="nav-link">Portfolio</a>
+      </nav>
+
+      <div class="header-meta">
+        <div class="user-info" id="header-user-info">Guest · — pts</div>
+        <a id="auth-cta" class="btn-plain" href="login.html">Log in</a>
+      </div>
+    </header>
+
+    <main class="content">
+    
+      <div class="content-header">
+        <div>
+          <h2 class="page-title">Markets</h2>
+        </div>
+      </div>
+
+
+      <section class="markets-panel">
+        <div class="markets-panel-header">
+          <span class="markets-panel-title">All Markets</span>
+          <span class="markets-panel-subtitle">Live probabilities</span>
+        </div>
+
+        <div id="markets" class="markets-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+
+    (async () => {
+      const savedUser = localStorage.getItem("username");
+
+      if (savedUser) {
+        try {
+          await refreshUserHeader({ force: true });
+        } catch (e) {
+          console.error("Auto-login failed:", e);
+          localStorage.removeItem("username");
+        }
+      }
+
+
+      if (typeof fetchMarkets === "function") fetchMarkets();
+
+      startSmartPoll(fetchMarkets, { baseMs: 5000, maxMs: 30000, runImmediately: false });
+
+      startSmartPoll(() => refreshUserHeader(), { baseMs: 30000, maxMs: 120000, runImmediately: false });
+    })();
+  </script>
+  
+  
+</body>
+</html>
