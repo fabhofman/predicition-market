@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facto | Login</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="logo-block">
+        <h1 class="logo-text">FACTO</h1>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Markets</a>
+        <a href="portfolio.html" class="nav-link">Portfolio</a>
+      </nav>
+
+      <div class="header-meta">
+        <div class="user-info" id="header-user-info">Guest · — pts</div>
+        <a id="auth-cta" class="btn-plain" href="login.html">Log in</a>
+      </div>
+    </header>
+
+    <main class="content narrow">
+      <div class="content-header">
+        <div>
+          <h2 class="page-title">Access your account</h2>
+          <p class="page-subtitle">Sign in to trade, manage your portfolio, and view live markets.</p>
+        </div>
+      </div>
+
+      <section class="login-section">
+        <div class="login-card" id="login-section">
+          <h2>Login or Create Account</h2>
+          <label for="username-input">Username</label>
+          <input
+            type="text"
+            id="username-input"
+            placeholder="Enter your username"
+            autocomplete="username"
+          />
+          <button onclick="login()" class="btn-primary">Continue</button>
+          <p id="current-user" class="text-muted" style="margin-top: 6px; font-size: 13px;"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (async () => {
+      await refreshUserHeader({ force: true });
+
+      const savedUser = getUser();
+      if (savedUser) {
+        const currentUserEl = document.getElementById("current-user");
+        if (currentUserEl) currentUserEl.textContent = `Logged in as ${savedUser}`;
+      }
+    })();
+  </script>
+</body>
+</html>
