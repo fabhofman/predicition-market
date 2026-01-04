@@ -1,0 +1,13 @@
+*.py
+*.pyc
+__pycache__/
+models/
+exchange.db
+requirements.txt
+venv/
+.venv/
+.env
+.pytest_cache/
+*.log
+.git/
+.gitignore
