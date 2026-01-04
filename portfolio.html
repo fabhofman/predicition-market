@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facto | Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="logo-block">
+        <h1 class="logo-text">FACTO</h1>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Markets</a>
+        <a href="portfolio.html" class="nav-link active">Portfolio</a>
+      </nav>
+
+      <div class="header-meta">
+        <div class="user-info" id="header-user-info">Guest · — pts</div>
+        <a id="auth-cta" class="btn-plain" href="login.html">Log in</a>
+      </div>
+    </header>
+
+    <main class="content">
+      <a href="index.html" class="back-link">← Back to Markets</a>
+
+      <div class="section-card stretch-card" id="portfolio-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Your portfolio</h2>
+          </div>
+        </div>
+
+        <table id="portfolio">
+          <thead>
+            <tr>
+              <th>Market</th>
+              <th>YES</th>
+              <th>NO</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody id="portfolio-body">
+            <tr>
+              <td colspan="8" class="text-center" style="padding: 26px;">
+                <div class="text-muted" style="font-size: 14px;">Loading portfolio...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (async () => {
+      const currentUser = getUser();
+      if (!currentUser) {
+        const redirect = encodeURIComponent(window.location.href);
+        window.location.href = `login.html?redirect=${redirect}`;
+        return;
+      }
+
+      await refreshUserHeader({ force: true });
+      loadPortfolio();
+
+      startSmartPoll(loadPortfolio, { baseMs: 15000, maxMs: 60000, runImmediately: false });
+      startSmartPoll(() => refreshUserHeader(), { baseMs: 30000, maxMs: 120000, runImmediately: false });
+    })();
+  </script>
+</body>
+</html>
