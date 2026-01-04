@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facto | Trade</title>
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="logo-block">
+        <h1 class="logo-text">FACTO</h1>
+      </div>
+
+      <nav class="nav">
+        <a href="index.html" class="nav-link active">Markets</a>
+        <a href="portfolio.html" class="nav-link">Portfolio</a>
+      </nav>
+
+      <div class="header-meta">
+        <div class="user-info" id="header-user-info">Guest · — pts</div>
+        <a id="auth-cta" class="btn-plain" href="login.html">Log in</a>
+      </div>
+    </header>
+
+    <main class="content">
+      <a href="index.html" class="back-link">← Back to Markets</a>
+
+      <div class="trade-hero">
+        <h1 id="market-name" class="page-title">Loading...</h1>
+        <p id="market-info" class="text-muted"></p>
+      </div>
+
+      <div class="trade-grid">
+        <section class="section-card stretch-card">
+          <div class="price-display">
+            <div class="price-label">Market probability</div>
+            <div class="price-value mono" id="current-market-price">—</div>
+            <div class="price-grid">
+              <div class="price-box">
+                <div class="price-box-label">YES Price</div>
+                <div class="price-box-value yes-color mono" id="current-yes-price">—</div>
+              </div>
+              <div class="price-box">
+                <div class="price-box-label">NO Price</div>
+                <div class="price-box-value no-color mono" id="current-no-price">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="position-strip">
+            <div class="position-tile yes-pos">
+              <div class="tile-label">Your YES</div>
+              <div class="tile-value mono" id="position-yes">—</div>
+            </div>
+            <div class="position-tile no-pos">
+              <div class="tile-label">Your NO</div>
+              <div class="tile-value mono" id="position-no">—</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-card order-card stretch-card">
+          <div class="side-toggle" id="side-toggle">
+            <button class="side-pill active" data-side="yes" onclick="setSide('yes')">
+              <div class="pill-label">Yes</div>
+              <div class="pill-value" id="side-yes-value">— pts</div>
+            </button>
+            <button class="side-pill" data-side="no" onclick="setSide('no')">
+              <div class="pill-label">No</div>
+              <div class="pill-value" id="side-no-value">— pts</div>
+            </button>
+          </div>
+
+          <div class="mode-toggle" id="mode-toggle">
+            <button class="mode-pill active" data-mode="points" onclick="setOrderMode('points')">Points</button>
+            <button class="mode-pill" data-mode="quantity" onclick="setOrderMode('quantity')">Contracts</button>
+          </div>
+
+          <div class="input-stack">
+            <label for="order-amount" class="form-label" id="amount-label">Amount</label>
+            <div class="input-shell">
+              <input type="number" id="order-amount" min="1" value="10" oninput="onAmountInput()" />
+              <span class="input-hint" id="amount-hint">points</span>
+            </div>
+          </div>
+
+          <div class="trade-buttons">
+            <button id="buy-button" onclick="handleTradeClick('buy')" class="btn-success">Buy YES</button>
+            <button id="sell-button" onclick="handleTradeClick('sell')" class="btn-danger">Sell YES</button>
+          </div>
+
+          <div class="preview-panel">
+            <div class="preview-row">
+              <span>Odds</span>
+              <span class="mono" id="preview-odds">—</span>
+            </div>
+            <div class="preview-row">
+              <span>Payout if <span id="preview-side-label">YES</span></span>
+              <span class="mono" id="preview-payout">—</span>
+            </div>
+            <div class="preview-row">
+              <span id="preview-row-label">Contracts</span>
+              <span class="mono" id="preview-contracts">—</span>
+            </div>
+            <div class="preview-row">
+              <span id="preview-sub-row-label">Spend / Receive</span>
+              <span class="mono" id="preview-cost">—</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="result-container"></div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    const TRADE_COOLDOWN_MS = 3000;
+    let tradeLocked = false;
+
+    function setTradeButtonsState(disabled) {
+      const buttons = document.querySelectorAll(".trade-buttons button");
+      buttons.forEach(btn => (btn.disabled = disabled));
+    }
+
+    function handleTradeClick(action) {
+      if (tradeLocked) return;
+
+      tradeLocked = true;
+      setTradeButtonsState(true);
+
+      if (action === "buy") buy();
+      else sell();
+
+      setTimeout(() => {
+        tradeLocked = false;
+        setTradeButtonsState(false);
+      }, TRADE_COOLDOWN_MS);
+    }
+
+    let amountDebounce = null;
+    function onAmountInput() {
+      clearTimeout(amountDebounce);
+      amountDebounce = setTimeout(() => {
+
+        if (typeof updatePreview === "function") updatePreview();
+      }, 200);
+
+    (async () => {
+      const currentUser = getUser();
+      if (!currentUser) {
+        const redirect = encodeURIComponent(window.location.href);
+        window.location.href = `login.html?redirect=${redirect}`;
+        return;
+      }
+
+
+      refreshUserHeader({ force: true });
+
+      if (typeof applyMarketHintIfPresent === "function") {
+        applyMarketHintIfPresent();
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      setOrderMode("points");
+      setSide("yes");
+      await loadMarket(id);
+      await refreshMarketPosition();
+
+      startSmartPoll(async () => {
+        const tasks = [
+          refreshUserHeader() 
+        ];
+
+        tasks.push(updatePreviewForSide(selectedSide));
+        tasks.push(refreshMarketPosition());
+
+        await Promise.all(tasks);
+      }, { baseMs: 5000, maxMs: 30000, runImmediately: false });
+    })();
+  </script>
+</body>
+</html>
