@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facto | Logout</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell center">
+    <div class="logout-card">
+      <h1>Signing out…</h1>
+      <p class="text-muted">We'll take you back to markets in a moment.</p>
+    </div>
+  </div>
+  <script>
+    localStorage.removeItem("username");
+    sessionStorage.clear();
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 450);
+  </script>
+</body>
+</html>
