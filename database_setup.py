@@ -70,9 +70,8 @@ class ClearingHouseDB(SQLModel, table=True):
     points: float = Field(default=0)
 
 
-# ------------------------------------------------------------
-# IMPORTANT: Connection pooling (biggest Supabase latency win)
-# ------------------------------------------------------------
+#Connection pooling (biggest Supabase latency win)
+
 engine = create_engine(
     DATABASE_URL,
     echo=False,
